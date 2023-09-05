@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    name: beacondt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beacondt
+  labels:
+    app: beacondt
+spec:
+  ports:
+  - port: 9998
+    targetPort: 9987
+    name: http
+  selector:
+    app: beacondt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beacondt-v4
+  labels:
+    version: v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beacondt
+  template:
+    metadata:
+      labels:
+        app: beacondt
+        version: v4
+      annotations:
+        consul.hashicorp.com/connect-inject: 'true'
+    spec:
+      containers:
+      - name: beacondt
+        image: timfa/a1pe:beacon
+        env:
+        - name: FOSTER_SERVICE
+          value: /tgcs/1.0.0
+        resources:
+          requests:
+            cpu: 100m
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9998
+      imagePullSecrets:
+        - name: foster

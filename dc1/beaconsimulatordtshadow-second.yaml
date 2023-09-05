@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: beacondsimulatordtshadow-second
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beacondsimulatordtshadow-second
+  labels:
+    app: beacondsimulatordtshadow-second
+spec:
+  ports:
+  - port: 4080
+    targetPort: 4080
+    name: http
+    protocol: TCP
+  - port: 7400
+    targetPort: 7400
+    name: dds1
+    protocol: UDP
+  - port: 7411
+    targetPort: 7411
+    name: dds2
+    protocol: UDP
+  selector:
+    app: beacondsimulatordtshadow-second
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beacondsimulatordtshadow-second-v1
+  labels:
+    version: v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beacondsimulatordtshadow-second
+  template:
+    metadata:
+      labels:
+        app: beacondsimulatordtshadow-second
+        version: v1
+      annotations:  
+        consul.hashicorp.com/connect-inject: 'true'
+        'consul.hashicorp.com/connect-service-upstreams': 'beacondsimulatordtshadow:9987:dc1'
+    spec:
+      containers:
+      - name: beacondsimulatordtshadow
+        image: fosterACR.azurecr.io/foster:4.0
+        env:
+        - name: FOSTER_SERVICE
+          value: ""
+        - name: FOSTER_PORT
+          value: "4080"
+        - name: FOSTER_CLOUD_GW
+          value: "http://127.0.0.1:9987"
+        - name: FOSTER_APIM
+          value: "https://preprodapim.umbrellaiot.com:9443"
+        - name: FOSTER_TOKEN
+          value: "<APPTOKEN>"
+        - name: FOSTER_STORAGE
+          value: "false"
+        - name: FOSTER_DUPLICATE
+          value: "true"
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "10m"
+        ports:
+        - containerPort: 4080
+      imagePullSecrets:
+        - name: foster
