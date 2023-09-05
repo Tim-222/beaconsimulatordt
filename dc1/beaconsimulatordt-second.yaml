@@ -44,7 +44,7 @@ spec:
         version: v1
       annotations:  
         consul.hashicorp.com/connect-inject: 'true'
-        'consul.hashicorp.com/connect-service-upstreams': 'beaconsimulatordt:9987:dc1 beaconsimulatordt:9998:dc2'
+        'consul.hashicorp.com/connect-service-upstreams': 'beaconsimulatordt:9998:dc2'
     spec:
       containers:
       - name: postgres
@@ -69,7 +69,7 @@ spec:
         - name: FOSTER_PORT
           value: "4020"
         - name: FOSTER_CLOUD_GW
-          value: "http://127.0.0.1:9987"
+          value: "http://127.0.0.1:9998"
         - name: FOSTER_APIM
           value: "https://preprodapim.umbrellaiot.com:9443"
         - name: FOSTER_TOKEN
@@ -79,7 +79,7 @@ spec:
         - name: FOSTER_PREFIX
           value: "%"
         - name: FOSTER_RESYNC
-          value: "http://127.0.0.1:9998"
+          value: "https://preprodapim.umbrellaiot.com:9096"
         - name: FOSTER_DUPLICATE
           value: "true"
         imagePullPolicy: Always
