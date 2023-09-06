@@ -20,9 +20,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beaconsimulatordtshadow-second-v4
+  name: beaconsimulatordtshadow-second-v1
   labels:
-    version: v4
+    version: v1
 spec:
   replicas: 1
   selector:
@@ -32,7 +32,7 @@ spec:
     metadata:
       labels:
         app: beaconsimulatordtshadow-second
-        version: v4
+        version: v1
       annotations:
         consul.hashicorp.com/connect-inject: 'true'
     spec:
