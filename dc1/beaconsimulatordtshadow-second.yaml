@@ -1,74 +1,63 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: beaconsimulatordtshadow-second
+    name: beaconsimulatorshadow-second
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: beaconsimulatordtshadow-second
+  name: beaconsimulatorshadow-second
   labels:
-    app: beaconsimulatordtshadow-second
+    app: beaconsimulatorshadow-second
 spec:
   ports:
-  - port: 4080
-    targetPort: 4080
+  - port: 9985
+    targetPort: 9998   
     name: http
-    protocol: TCP
-  - port: 7400
-    targetPort: 7400
-    name: dds1
-    protocol: UDP
-  - port: 7411
-    targetPort: 7411
-    name: dds2
-    protocol: UDP
   selector:
-    app: beaconsimulatordtshadow-second
+    app: beaconsimulatorshadow-second
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beaconsimulatordtshadow-second-v1
+  name: beaconsimulatorshadow-second-v4
   labels:
     version: v4
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: beaconsimulatordtshadow-second
+      app: beaconsimulatorshadow-second
   template:
     metadata:
       labels:
-        app: beaconsimulatordtshadow-second
-        version: v1
-      annotations:  
+        app: beaconsimulatorshadow-second
+        version: v4
+      annotations:
         consul.hashicorp.com/connect-inject: 'true'
-        'consul.hashicorp.com/connect-service-upstreams': 'beaconsimulatordtshadow:9987:dc1'
     spec:
       containers:
-      - name: beaconsimulatordtshadow
-        image: fosterACR.azurecr.io/foster:4.0
-        env:
-        - name: FOSTER_SERVICE
-          value: ""
-        - name: FOSTER_PORT
-          value: "4080"
-        - name: FOSTER_CLOUD_GW
-          value: "http://127.0.0.1:9987"
-        - name: FOSTER_APIM
-          value: "https://preprodapim.umbrellaiot.com:9443"
-        - name: FOSTER_TOKEN
-          value: "<APPTOKEN>"
-        - name: FOSTER_STORAGE
-          value: "false"
-        - name: FOSTER_DUPLICATE
-          value: "true"
-        imagePullPolicy: Always
+      - name: beaconsimulatorshadow-second
+        image: beaconacr.azurecr.io/beacondt:test       
         resources:
           requests:
-            cpu: "10m"
+            cpu: 100m
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /opt/matlab/licenses
+            name: licenses
+      - name: a1pe
+        image: timfa/a1pe:beacon       
+        resources:
+          requests:
+            cpu: 100m
+        imagePullPolicy: Always
         ports:
-        - containerPort: 4080
+        - containerPort: 9998
       imagePullSecrets:
+        - name: beacon
         - name: foster
+      volumes:
+      - name: licenses
+        persistentVolumeClaim:
+          claimName: licenses-pv-claim
