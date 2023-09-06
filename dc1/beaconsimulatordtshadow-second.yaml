@@ -1,43 +1,43 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-    name: beaconsimulatorshadow-second
+    name: beaconsimulatordtshadow-second
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: beaconsimulatorshadow-second
+  name: beaconsimulatordtshadow-second
   labels:
-    app: beaconsimulatorshadow-second
+    app: beaconsimulatordtshadow-second
 spec:
   ports:
   - port: 9985
     targetPort: 9998   
     name: http
   selector:
-    app: beaconsimulatorshadow-second
+    app: beaconsimulatordtshadow-second
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beaconsimulatorshadow-second-v4
+  name: beaconsimulatordtshadow-second-v4
   labels:
     version: v4
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: beaconsimulatorshadow-second
+      app: beaconsimulatordtshadow-second
   template:
     metadata:
       labels:
-        app: beaconsimulatorshadow-second
+        app: beaconsimulatordtshadow-second
         version: v4
       annotations:
         consul.hashicorp.com/connect-inject: 'true'
     spec:
       containers:
-      - name: beaconsimulatorshadow-second
+      - name: beaconsimulatordtshadow-second
         image: beaconacr.azurecr.io/beacondt:test       
         resources:
           requests:
